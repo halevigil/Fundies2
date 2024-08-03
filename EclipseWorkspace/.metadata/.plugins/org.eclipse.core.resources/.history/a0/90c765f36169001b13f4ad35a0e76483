@@ -1,0 +1,239 @@
+import tester.Tester;
+
+//a list of strings
+interface ILoString {
+
+}
+
+//an empty list of strings
+class MtLoString implements ILoString {
+
+}
+
+//a non-empty list of strings
+class ConsLoString implements ILoString {
+
+}
+
+//a list of trigrams
+interface ILoTrigram {
+
+  // returns the count of the given trigram in this list
+  int count(Trigram trigram);
+
+  // returns the first element of this list in compareTo order
+  Trigram getFirstCompareTo();
+
+  // returns the first element of the original list in compareTo order
+  // ACCUMULATOR: firstSoFar represents the first trigram in the list so far
+  Trigram getFirstCompareToAcc(Trigram firstSoFar);
+
+  // returns the most common Trigram in this list, returning the first in
+  // compareTo order for ties
+  Trigram mostCommonTrigram();
+
+  // returns the most common Trigram in the original list
+  // ACCUMULATORS: mostCommonSoFar represents the most common trigrams so far,
+  // highestCount represents the count of that trigram
+  Trigram mostCommonTrigramAcc(ILoTrigram mostCommonSoFar, int highestCount);
+}
+
+//an empty list of trigrams
+class MtLoTrigram implements ILoTrigram {
+  // returns the count of the given trigram in this empty list (always 0)
+  public int count(Trigram trigram) {
+    return 0;
+  }
+
+  // returns the first element of this empty list in compareTo order (always
+  // returns NO SUCH TRIGRAM)
+  public Trigram getFirstCompareTo() {
+    return new Trigram("NO", "SUCH", "TRIGRAM");
+  }
+
+  // returns the first element of the original list in compareTo order (always
+  // returns firstSoFar)
+  // ACCUMULATOR: firstSoFar represents the first trigram in the list so far
+  public Trigram getFirstCompareToAcc(Trigram firstSoFar) {
+    return firstSoFar;
+  }
+
+  // returns the most common Trigram in this empty list, returning the first in
+  // compareTo order for ties,always NO SUCH TRIGRAM
+  public Trigram mostCommonTrigram() {
+    return new Trigram("NO", "SUCH", "TRIGRAM");
+  }
+
+  // returns the most common Trigram in the original list, returns the first (in
+  // compareTo ordering) of the most common trigrams so far
+  // ACCUMULATORS: mostCommonSoFar represents the most common trigrams so far,
+  // highestCount represents the count of that trigram
+  public Trigram mostCommonTrigramAcc(ILoTrigram mostCommonSoFar, int highestCount) {
+    return mostCommonSoFar.getFirstCompareTo();
+  }
+
+}
+
+//a non-empty list of trigrams
+class ConsLoTrigram implements ILoTrigram {
+  Trigram first;
+  ILoTrigram rest;
+
+  // creates a new cons list with the given first trigram and rest of list
+  ConsLoTrigram(Trigram first, ILoTrigram rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+
+  // returns the count of the given trigram in this cons list
+  public int count(Trigram trigram) {
+    if (this.first.compareTo(trigram) == 0) {
+      return 1 + this.rest.count(trigram);
+    }
+    return this.rest.count(trigram);
+  }
+
+  // returns the first element of this cons list in compareTo order
+  public Trigram getFirstCompareTo() {
+    return this.rest.getFirstCompareToAcc(this.first);
+  }
+
+  // returns the first element of the original list in compareTo order
+  // ACCUMULATOR: firstSoFar represents the first trigram in the list so far
+  public Trigram getFirstCompareToAcc(Trigram firstSoFar) {
+    int comparison = this.first.compareTo(firstSoFar);
+    if (comparison <= 0) {
+      return this.rest.getFirstCompareToAcc(this.first);
+    }
+    return this.rest.getFirstCompareToAcc(firstSoFar);
+  }
+
+  // returns the most common Trigram in this cons list, returning the first in
+  // compareTo order for ties
+  public Trigram mostCommonTrigram() {
+    return this.rest.mostCommonTrigramAcc(new ConsLoTrigram(this.first, new MtLoTrigram()),
+        this.count(this.first));
+  }
+
+  // returns the most common Trigram in the original list
+  // ACCUMULATORS: mostCommonSoFar represents the most common trigrams so far,
+  // highestCount represents the count of that trigram
+  public Trigram mostCommonTrigramAcc(ILoTrigram mostCommonSoFar, int highestCount) {
+    int firstCount = this.count(this.first);
+    if (firstCount > highestCount) {
+      return rest.mostCommonTrigramAcc(new ConsLoTrigram(this.first, new MtLoTrigram()),
+          firstCount);
+    }
+    else if (firstCount < highestCount) {
+      return rest.mostCommonTrigramAcc(mostCommonSoFar, highestCount);
+    }
+    else {
+      return rest.mostCommonTrigramAcc(new ConsLoTrigram(this.first, mostCommonSoFar),
+          highestCount);
+    }
+  }
+
+}
+
+class Trigram {
+  String first;
+  String second;
+  String third;
+
+  // creates a trigram with the given first, second and third words
+  Trigram(String first, String second, String third) {
+    this.first = first;
+    this.second = second;
+    this.third = third;
+  }
+
+  // returns a negative number if this Trigram comes before the other Trigram, a
+  // positive number if this Trigram comes after the other Trigram, and zero if
+  // they are the same trigram (lexicographically and case-insensitively)
+  int compareTo(Trigram other) {
+    int compareFirst = this.first.compareToIgnoreCase(other.first);
+    if (compareFirst != 0) {
+      return compareFirst;
+    }
+    int compareSecond = this.second.compareToIgnoreCase(other.second);
+    if (compareSecond != 0) {
+      return compareSecond;
+    }
+    return this.third.compareToIgnoreCase(other.third);
+  }
+}
+
+class ExamplesTrigrams {
+  Trigram trigramFundies = new Trigram("I", "Love", "Fundies");
+  Trigram trigramUS = new Trigram("United", "States", "America");
+  Trigram trigramUs = new Trigram("united", "states", "america");
+  Trigram trigramUAE = new Trigram("United", "Arab", "Emirates");
+  Trigram trigramAf = new Trigram("United", "States", "Africa");
+  Trigram trigramZoo = new Trigram("Zebras", "love", "lions");
+
+  // tests the compareTo method on the Trigram class
+  boolean testCompareTo(Tester t) {
+    return t.checkExpect(trigramFundies.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramFundies) > 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramZoo) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramUAE) > 0, true)
+        && t.checkExpect(trigramUAE.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramAf) > 0, true)
+        && t.checkExpect(trigramAf.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramUS), 0)
+        && t.checkExpect(trigramUS.compareTo(trigramUs), 0);
+  }
+
+  ILoTrigram empty = new MtLoTrigram();
+  ILoTrigram usList = new ConsLoTrigram(trigramUS, new MtLoTrigram());
+  ILoTrigram usZooList = new ConsLoTrigram(trigramZoo, usList);
+
+  ILoTrigram mediumList = new ConsLoTrigram(trigramUAE,
+      new ConsLoTrigram(trigramUS, new ConsLoTrigram(trigramUAE, new MtLoTrigram())));
+
+  ILoTrigram longList = new ConsLoTrigram(trigramUS,
+      new ConsLoTrigram(trigramUS, new ConsLoTrigram(trigramUAE, new ConsLoTrigram(trigramUS,
+          new ConsLoTrigram(trigramUAE, new ConsLoTrigram(trigramZoo, new MtLoTrigram()))))));
+  ILoTrigram equalList = new ConsLoTrigram(trigramUS,
+      new ConsLoTrigram(trigramUS, new ConsLoTrigram(trigramUAE, new ConsLoTrigram(trigramUS,
+          new ConsLoTrigram(trigramUAE, new ConsLoTrigram(trigramUAE, new MtLoTrigram()))))));
+  ILoTrigram caseSensitiveList = new ConsLoTrigram(trigramUS,
+      new ConsLoTrigram(trigramUS, new ConsLoTrigram(trigramUAE,
+          new ConsLoTrigram(trigramUs, new ConsLoTrigram(trigramUs, new ConsLoTrigram(trigramUAE,
+              new ConsLoTrigram(trigramUAE, new ConsLoTrigram(trigramUAE, new MtLoTrigram()))))))));
+
+  // tests the count method on the ILoTrigram interface
+  boolean testCount(Tester t) {
+    return t.checkExpect(empty.count(trigramUS), 0)//
+        && t.checkExpect(longList.count(trigramUS), 3)
+        && t.checkExpect(longList.count(trigramUAE), 2)
+        && t.checkExpect(longList.count(trigramZoo), 1)
+        && t.checkExpect(longList.count(trigramFundies), 0);
+  }
+
+  // tests the getFirstCompareTo method on the ILoTrigram interface
+  boolean testGetFirstCompareTo(Tester t) {
+    return t.checkExpect(empty.getFirstCompareTo(), new Trigram("NO", "SUCH", "TRIGRAM"))
+        && t.checkExpect(usList.getFirstCompareTo(), trigramUS)
+        && t.checkExpect(usZooList.getFirstCompareTo(), trigramUS)
+        && t.checkExpect(mediumList.getFirstCompareTo(), trigramUAE)
+        && t.checkExpect(caseSensitiveList.getFirstCompareTo(), trigramUs);
+  }
+
+  // tests the getFirstCompareToAcc method on the ILoTrigram interface
+  boolean testGetFirstCompareToAcc(Tester t) {
+    return t.checkExpect(empty.getFirstCompareTo(), new Trigram("NO", "SUCH", "TRIGRAM"))
+        && t.checkExpect(usList.getFirstCompareTo(), trigramUS)
+        && t.checkExpect(usZooList.getFirstCompareTo(), trigramUS)
+        && t.checkExpect(mediumList.getFirstCompareTo(), trigramUAE)
+        && t.checkExpect(caseSensitiveList.getFirstCompareTo(), trigramUs);
+  }
+
+  boolean testMostCommonTrigram(Tester t) {
+    return t.checkExpect(empty.mostCommonTrigram(), new Trigram("NO", "SUCH", "TRIGRAM"))
+        && t.checkExpect(mediumList.mostCommonTrigram(), trigramUAE)
+        && t.checkExpect(longList.mostCommonTrigram(), trigramUS)
+        && t.checkExpect(equalList.mostCommonTrigram(), trigramUAE)
+        && t.checkExpect(caseSensitiveList.mostCommonTrigram(), trigramUs);
+  }
+}

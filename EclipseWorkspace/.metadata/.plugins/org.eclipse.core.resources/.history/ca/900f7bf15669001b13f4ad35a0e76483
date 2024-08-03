@@ -1,0 +1,54 @@
+//a list of strings
+interface ILoString {
+
+}
+
+//an empty list of strings
+class MtLoString implements ILoString {
+
+}
+
+//a non-empty list of strings
+class ConsLoString implements ILoString {
+
+}
+
+//a list of trigrams
+interface ILoTrigram {
+
+}
+
+//an empty list of trigrams
+interface MtLoTrigram {
+
+}
+
+//a non-empty list of trigrams
+interface ConsLoTrigram {
+
+}
+
+class Trigram {
+  String first;
+  String second;
+  String third;
+
+  // creates a trigram with the given first, second and third words
+  Trigram(String first, String second, String third) {
+    this.first = first;
+    this.second = second;
+    this.third = third;
+  }
+
+  int compareTo(Trigram other) {
+    int compareFirst = this.first.compareToIgnoreCase(other.first);
+    if (compareFirst != 0) {
+      return compareFirst;
+    }
+    int compareSecond = this.second.compareToIgnoreCase(other.second);
+    if (compareSecond != 0) {
+      return compareSecond;
+    }
+    return this.third.compareToIgnoreCase(other.third);
+  }
+}

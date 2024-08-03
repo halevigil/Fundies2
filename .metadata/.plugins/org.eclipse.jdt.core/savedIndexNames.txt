@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+C:\Users\halev\Documents\Classes\Fundies 2\.metadata\.plugins\org.eclipse.jdt.core
+2967054033.index
+2768476762.index
+4109182411.index

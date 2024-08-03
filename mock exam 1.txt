@@ -1,0 +1,205 @@
+interface ILoString{
+	//compresses this list using run-length encoding
+	ILoCountedString compress();
+	//compresses this list using run-length encoding
+	//ACCUMULATORS: prevLetter represents the previous letter in the list.
+	//prevCount represents the count of that letter
+	CountedString compressAcc(prevLetter,prevCount);
+}
+
+//a non-empty list of strings
+class ConsLoString{
+	String first;
+	ILoString rest;
+	//compresses this list using run-length encoding
+	ILoCountedString compress(){
+		return this.compressAcc(this.first,1)
+	}
+	//compresses this list using run-length encoding
+	//ACCUMULATORS: prevLetter represents the previous letter in the list.
+	//prevCount represents the count of that letter
+	ILoCountedString compressAcc(prevLetter,prevCount){
+		if (this.first.equals(prevLetter)){
+			return this.rest.compressAcc(prevLetter,prevCount+1)
+		}
+		return new ConsLoCountedString(new CountedString(prevCount,prevLetter),this.rest.compress());
+	}
+}
+// an empty list of strings
+class EmptyLoString{
+	//compresses this list using run-length encoding
+	ILoCountedString compressAcc(){
+		return 
+	}
+	//compresses this list using run-length encoding
+	ILoCountedString compress(){
+		return new MtLoCountedString();
+	}
+	//compresses this list using run-length encoding
+	//ACCUMULATORS: prevLetter represents the previous letter in the list.
+	//prevCount represents the count of that letter
+	ILoCountedString compressAcc(prevLetter,prevCount){
+		if (this.first.equals(prevLetter)){
+			return this.rest.compressAcc(prevLetter,prevCount+1)
+		}
+		return new ConsLoCountedString(new CountedString(prevCount,prevLetter),new MtLoCountedString());
+	}
+}
+class ExamplesILoString{
+	ILoString emptyS = new MtLoString();
+	ILoString emptyC = new MtLoCountedString();
+	ILoString list1 = makeList("a","a","b","c","c","c");
+	ILoString list2 = makeList("a","b","c","c","d");
+	ILoString list3 = makeList("b","c","c","d");
+	ILoCountedString list1Compressed=makeList(new CountedString(2,"a"),new CountedString(1,"a"),
+		new CountedString(3,"a"));
+	boolean testCompress(Tester t){
+		return t.checkExpect(emptyS.compress(),emptyC)
+		&& t.checkExpect(list1.compress(),list1Compressed);
+	}
+	boolean testCompressAcc(Tester t){
+		return t.checkExpect(emptyS.compressAcc("a",2),
+			new ConsLoCountedString(new CountedString("a",2)
+				,new MtLoCountedString()))
+		&& t.checkExpect(list2.compressAcc("a",1),list1Compressed)
+		&& t.checkExpect(list3.compressAcc("a",2),list1Compressed);
+	}
+}
+2.
+a. doesntFoobar returns whether the given AFileSystemItem 
+contains two AFileSystemItems with the same name in the same directory. 
+The name could be containsDuplicatesInSameDirectory.
+
+doesntFoobar returns whether the given AFileSystemItem 
+contains two AFileSystemItems with the same name given the name of the name of 
+the previous AFileSystemItem. The name could be containsDuplicatesInSameDirectoryHelp.
+b.
+//In ConsLoFSItem
+public boolean doesntFoobar(){
+	return this.rest.doesntFoobarHelp(this.first.name);
+}
+c.
+ILoFSItem tree1=makeList(new File("alice","some contents")
+	, new File("bob","some contents2")
+	, new Directory("charlie",makeList(new File("daniel","some contents3")))
+ILoFSItem tree2=makeList(new Directory("alice",makeList(new File("alice","some contents1"),new File("bob","some contents1")))
+	, new File("bob","some contents2")
+	, new Directory("charlie",makeList(new File("alice","some contents3")))
+ILoFSItem tree3=makeList(new Directory("alice",makeList(new File("alice","some contents1"),new File("bob","some contents1")))
+, new File("bob","some contents2")
+, new Directory("charlie",makeList(new File("alice","some contents3"),new Directory("alice",makeList())))
+t.checkExpect(tree1.doesntFoobar(),false) //should fail because of the bug
+t.checkExpect(tree2.doesntFoobar(),false) 
+t.checkExpect(tree2.doesntFoobar(),true) 
+
+
+3.
+//In ConsLoFSItem
+//returns a list of all paths to all the items with the given name
+ILoString pathTo(String name){
+	return this.first.pathTo(name,"").append(this.rest.pathTo(name));
+}
+
+//returns a list of all paths to all the items with the given name
+//ACCUMULATOR: pathToThis represents the path to this list of files
+ILoString pathToAcc(String name, pathToThis){
+	return this.first.pathTo(name, pathToThis).append(this.rest.pathToAcc(name,pathToThis));
+}
+
+//In MtLoFSItem
+//returns a list of all paths to all the items with the given name (returns an empty list);
+ILoString pathTo(String name){
+	return new MtLoString();
+}
+//returns a list of all paths to all the items with the given name
+// (returns an empty list)
+//ACCUMULATOR: pathToThis represents the path to this list of files
+ILoString pathToAcc(String name, pathToThis){
+	return new MtLoString();
+}
+
+// In Directory
+//returns a list of all paths to all the items with the given name,
+//either this directory itself or any items in this directory
+//given the path to this directory
+String pathTo(String name, String pathToThis){
+	if (this.name.equals(name)){
+		return new ConsLoString(pathToThis+this.name+"/", 
+			this.contents.pathToAcc(name, pathToThis+this.name+"/"));
+	}
+	return this.contents.pathToAcc(name, pathToThis+this.name+"/");
+}
+
+// In File
+//returns a list of all paths to all the items with the given name (which can only be this file) 
+//given the path to this file
+ILoString pathTo(String name, String pathToThis){
+	if (this.name.equals(name)){
+		return new ConsLoString(pathToThis+this.name, new MtLoString());
+	}
+	return new MtLoString();
+}
+
+class ExamplesILoString{
+	boolean testPathToILoFSItem(Tester t){
+		return t.checkExpect(tree2.pathTo("Alice"))
+		&& t.checkExpect(tree2.pathTo)
+		&& t.checkExpect
+	}
+}
+
+
+4.
+interface INumTree{
+	boolean sameOrMirrored(INumTree other);
+	boolean same(INumTree other);
+	boolean mirrored(INumTree other);
+	boolean sameLeaf(Leaf other);
+	boolean sameNode(INumTree other);
+	booleam mirroredNode(Node other);
+}
+class Leaf implements INumTree(INumTree other){
+	booleam sameOrMirrored(INumTree other){
+		return other.sameLeaf(this);
+	}
+	boolean same(INumTree other){
+		return other.sameLeaf(this);
+	}
+	boolean mirrored(INumTree other){
+		return other.sameLeaf(this);
+	}
+	boolean sameNode(Node other){
+		return false;
+	}
+	boolean mirroredNode(Node other){
+		return false
+	}
+	boolean sameLeaf(Leaf other){
+		return true;
+	}
+}
+class Node implements INumTree {
+	boolean sameOrMirrored(INumTree other){
+		return other.sameNode(this)||other.mirroredNode(this)
+	}
+	boolean sameLeaf(Leaf other){
+		return false;
+	}
+	boolean sameNode(INumTree other){
+		return this.left.sameother.left&&...
+	}
+	boolean same(INumTree other){
+		return other.sameNode(this);
+	}
+	boolean mirrored(INumTree other){
+		return other.mirroredNode(this);
+	}
+	booleam mirroredNode(Node other);
+	
+}
+
+
+
+
+
+///DO WE HAVE TO WRITE OUT IMPORT TESTER

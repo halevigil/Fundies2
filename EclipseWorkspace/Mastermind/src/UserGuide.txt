@@ -1,0 +1,10 @@
+To play the game, select your colors from the color picker in the top left.
+Once you have selected the right amount of colors, press "Guess" to make your guess, or press "clear" to clear your current
+guess.
+
+You should see feedback appear after each guess you make.
+A black pin means that you guessed the right color in the right place,
+while a white pin means that you guessed the right color in the wrong place.
+
+The game ends when you make a completely correct guess, or when you run out of guesses 
+(the number of guesses remaining is in the top right).

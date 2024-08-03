@@ -1,0 +1,81 @@
+import tester.Tester;
+
+//a list of strings
+interface ILoString {
+
+}
+
+//an empty list of strings
+class MtLoString implements ILoString {
+
+}
+
+//a non-empty list of strings
+class ConsLoString implements ILoString {
+
+}
+
+//a list of trigrams
+interface ILoTrigram {
+  //returns the count of the given trigram in this array
+  int count(Trigram);
+}
+
+//an empty list of trigrams
+interface MtLoTrigram {
+
+}
+
+//a non-empty list of trigrams
+interface ConsLoTrigram {
+
+}
+
+class Trigram {
+  String first;
+  String second;
+  String third;
+
+  // creates a trigram with the given first, second and third words
+  Trigram(String first, String second, String third) {
+    this.first = first;
+    this.second = second;
+    this.third = third;
+  }
+
+  // returns a negative number if this Trigram comes before the other Trigram, a
+  // positive number if this Trigram comes after the other Trigram, and zero if
+  // they are the same trigram (lexicographically and case-insensitively)
+  int compareTo(Trigram other) {
+    int compareFirst = this.first.compareToIgnoreCase(other.first);
+    if (compareFirst != 0) {
+      return compareFirst;
+    }
+    int compareSecond = this.second.compareToIgnoreCase(other.second);
+    if (compareSecond != 0) {
+      return compareSecond;
+    }
+    return this.third.compareToIgnoreCase(other.third);
+  }
+}
+
+class ExamplesTrigrams {
+  Trigram trigramFundies = new Trigram("I", "Love", "Fundies");
+  Trigram trigramUS = new Trigram("United", "States", "America");
+  Trigram trigramUs = new Trigram("united", "states", "america");
+  Trigram trigramUAE = new Trigram("United", "Arab", "Emirates");
+  Trigram trigramAf = new Trigram("United", "States", "Africa");
+  Trigram trigramZoo = new Trigram("Zebras", "love", "lions");
+
+  boolean testCompareTo(Tester t) {
+    return t.checkExpect(trigramFundies.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramFundies) > 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramZoo) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramUAE) > 0, true)
+        && t.checkExpect(trigramUAE.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramAf) > 0, true)
+        && t.checkExpect(trigramAf.compareTo(trigramUS) < 0, true)
+        && t.checkExpect(trigramUS.compareTo(trigramUS), 0)
+        && t.checkExpect(trigramUS.compareTo(trigramUs), 0);
+  }
+}

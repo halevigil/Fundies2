@@ -1,0 +1,305 @@
+interface ILoContent {
+  double totalMegabytes();
+
+  double totalMegabytesHelp(ILoContent otherContent);
+
+  String pictureInfo();
+
+  boolean containsPictureNamed(String name);
+
+  ILoContent append(ILoContent other);
+}
+
+class MtLoContent implements ILoContent {
+  /*
+   * Template
+   * 
+   * Methods
+   * this.totalMegabytes()--double
+   * this.pictureInfo()--String
+   */
+
+  public String pictureInfo() {
+    return "";
+  }
+
+  public double totalMegabytes() {
+    return 0;
+  }
+  public double totalMegabytesHelp(ILoContent otherContent) {
+    return 0;
+  }
+
+  public boolean containsPictureNamed(String name) {
+    return false;
+  }
+
+  public ILoContent append(ILoContent other) {
+    return other;
+  }
+
+}
+
+class ConsLoContent implements ILoContent {
+  IContent first;
+  ILoContent rest;
+
+  ConsLoContent(IContent first, ILoContent rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+
+  /*
+   * Template
+   * 
+   * Fields
+   * this.first--IContent
+   * this.rest--ILoContent
+   * 
+   * Methods
+   * this.totalMegabytes()--double
+   * this.pictureInfo()--String
+   * 
+   * Methods on Fields
+   * this.first.totalMegabytes()--double
+   * this.first.pictureInfo()--String
+   * this.rest.totalMegabytes()--double
+   * this.rest.pictureInfo()--String
+   */
+
+  public String pictureInfo() {
+    return first.pictureInfo() + rest.pictureInfo();
+  }
+
+  public ILoContent append(ILoContent other) {
+    return new ConsLoContent(this.first,this.rest.append(ILoContent))
+  }
+
+  public double totalMegabytes() {
+    return first.totalMegabytesHelp(rest) + rest.totalMegabytes();
+  }
+
+  public double totalMegabytesHelp(ILoContent otherContent) {
+    return first.totalMegabytesHelp(rest.append(otherContent))
+        + rest.totalMegabytesHelp(otherContent);
+  }
+
+  public boolean containsPictureNamed(String name) {
+    return first.isPictureNamed(name) || rest.containsPictureNamed(name);
+  }
+
+}
+
+interface IContent {
+  double totalMegabytes();
+
+  double totalMegabytesHelp(ILoContent otherContent);
+
+  String pictureInfo();
+
+  boolean isPictureNamed(String name);
+}
+
+class Text implements IContent {
+  String name;
+  int numLines;
+  boolean inMarkdown;
+
+  Text(String name, int numLines, boolean inMarkdown) {
+    this.name = name;
+    this.numLines = numLines;
+    this.inMarkdown = inMarkdown;
+  }
+  /*
+   * Template
+   * 
+   * Fields 
+   * this.name--String
+   * this.numLines--int
+   * this.inMarkdown--boolean
+   * 
+   * Methods
+   * totalMegabytes()--double
+   * pictureInfo()--String
+   */
+
+  public double totalMegabytes() {
+    return 0;
+  }
+
+  public double totalMegabytesHelp(ILoContent otherContent) {
+    return 0;
+  };
+
+  public boolean isPictureNamed(String name) {
+    return false;
+  }
+
+  public String pictureInfo() {
+    return "";
+  }
+}
+
+class Picture implements IContent {
+  String name;
+  String description;
+  double megabytes;
+  /*
+   * Template
+   * 
+   * Fields 
+   * this.name--String
+   * this.description--String
+   * this.megabytes--double
+   * 
+   * Methods
+   * totalMegabytes()--double
+   * pictureInfo()--String
+   */
+
+  Picture(String name, String description, double megabytes) {
+    this.name = name;
+    this.description = description;
+    this.megabytes = megabytes;
+  }
+
+  public double totalMegabytes() {
+    return this.megabytes;
+  }
+
+  public boolean isPictureNamed(String name) {
+    return this.name == name;
+  }
+
+  public double totalMegabytesHelp(ILoContent otherContent) {
+    if (otherContent.containsPictureName(this.name)) {
+
+    }
+    return this.megabytes;
+  }
+
+  public String pictureInfo() {
+    return this.name + " (" + this.description + ") ";
+  }
+}
+
+class Hyperlink implements IContent {
+  String name;
+  Webpage destination;
+  /*
+   * Template
+   * 
+   * Fields 
+   *this.name--String
+   *this.destination--Webpage
+   * 
+   * Methods
+   * totalMegabytes()--double
+   * pictureInfo()--String
+   * 
+   * Methods on Fields
+   * this.destination.totalCredits()--double
+   * this.destination.totalMegabytes()--double
+   * this.destination.pictureInfo()--String
+   */
+
+  Hyperlink(String name, Webpage destination) {
+    this.name = name;
+    this.destination = destination;
+  }
+
+  public double totalMegabytes() {
+    return this.destination.totalMegabytes();
+  }
+
+  public String pictureInfo() {
+    return this.destination.pictureInfo();
+  }
+}
+
+class Webpage {
+  String name;
+  ILoContent content;
+
+  Webpage(String name, ILoContent content) {
+    this.name = name;
+    this.content = content;
+  }
+  /*
+   * Template
+   * 
+   * Fields 
+   * this.name--String
+   * this.contentILo--Content
+   * 
+   * Methods
+   * this.totalCredits()--double
+   * this.totalMegabytes()--double
+   * this.pictureInfo()--String
+   * 
+   * Methods on Fields
+   * this.content.totalMegabytes()--double
+   * this.content.pictureInfo()--String
+   */
+
+  double totalCredits() {
+    return Math.ceil(this.totalMegabytes());
+  }
+
+  double totalMegabytes() {
+
+    return this.content.totalMegabytes();
+  }
+
+  String pictureInfo() {
+    return this.content.pictureInfo();
+  }
+}
+
+class ExamplesWebpages {
+  // Our website, Fundies News Network (FNN), contains a homepage and two
+  // articles. The homepage links to two articles,
+  // which each link to the next article. The second article's
+  // Next Article button links to malware.
+  Webpage malware = new Webpage("Hot Babes In Your Area", new MtLoContent());
+
+  Webpage article2 = new Webpage("Next Semester To Feature \"Super-Accelerated\" Fundies",
+      new ConsLoContent(new Text("Article Text", 10, true),
+          new ConsLoContent(new Picture("Going Fast", "Super-Accelerated student", 1),
+              new ConsLoContent(new Hyperlink("Next Article", malware), new MtLoContent()))));
+
+  Webpage article1 = new Webpage("Ben Lerner Invents New Language",
+      new ConsLoContent(new Text("Article Text", 5000, true),
+          new ConsLoContent(new Picture("Ben Lerner", "Lerner inventing", 400),
+              new ConsLoContent(new Hyperlink("Next Article", article2), new MtLoContent()))));
+
+  Webpage newsHomepage = new Webpage("FNN Home", new ConsLoContent(
+      new Hyperlink("Lerner Invents Language", article1),
+      new ConsLoContent(new Hyperlink("Super Accelerated Fundies", article2), new MtLoContent())));
+
+  // Fundies 2 site
+  Webpage assignment1 = new Webpage("Assignment 1", new ConsLoContent(
+      new Picture("Submission", "submission screenshot", 13.7), new MtLoContent()));
+
+  Webpage syllabus = new Webpage("Syllabus",
+      new ConsLoContent(new Picture("Java", "HD Java Logo", 4), new ConsLoContent(
+          new Text("Week 1", 10, true),
+          new ConsLoContent(new Hyperlink("First Assignment", assignment1), new MtLoContent()))));
+
+  Webpage assignments = new Webpage("Assignments",
+      new ConsLoContent(new Text("Pair Programming", 10, false), new ConsLoContent(
+          new Text("Expectations", 15, false),
+          new ConsLoContent(new Hyperlink("First Assignment", assignment1), new MtLoContent()))));
+
+  Webpage homepage = new Webpage("Fundies 2 Homepage", new ConsLoContent(
+      new Text("Course Goals", 5, true),
+      new ConsLoContent(new Text("Instructor Contact", 1, false), new ConsLoContent(
+          new Picture("Eclipse", "Eclipse logo", 0.13),
+          new ConsLoContent(new Picture("Coding Background", "digital rain from the Matrix", 30.2),
+              new ConsLoContent(new Hyperlink("Syllabus", syllabus), new ConsLoContent(
+                  new Hyperlink("Assignments", assignments), new MtLoContent())))))));
+
+}
+
+// The reason our methods double-count is because a piece of content could be hyperlinked to
+// and also present in the list, or hyperlinked to multiple times.

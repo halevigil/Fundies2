@@ -1,0 +1,404 @@
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import tester.Tester;
+
+// An interface for components of an arithmetic expression
+interface IArith {
+  // Accepts an IArith visitor
+  <R> R accept(IArithVisitor<R> visitor);
+}
+
+// A constant that is part of an arithmetic expression
+class Const implements IArith {
+  double num;
+
+  Const(double num) {
+    this.num = num;
+  }
+
+  // Accepts an IArith visitor
+  public <R> R accept(IArithVisitor<R> visitor) {
+    return visitor.applyConst(this);
+  }
+}
+
+// A unary (one input) formula that is part of an arithmetic expression
+class UnaryFormula implements IArith {
+  Function<Double, Double> func;
+  String name;
+  IArith child;
+
+  UnaryFormula(Function<Double, Double> func, String name, IArith child) {
+    this.func = func;
+    this.name = name;
+    this.child = child;
+  }
+
+  // Accepts an IArith visitor
+  public <R> R accept(IArithVisitor<R> visitor) {
+    return visitor.applyUnary(this);
+  }
+}
+
+// A binary (two input) formula that is part of an arithmetic expression
+class BinaryFormula implements IArith {
+  BiFunction<Double, Double, Double> func;
+  String name;
+  IArith left;
+  IArith right;
+
+  BinaryFormula(BiFunction<Double, Double, Double> func, String name, IArith left, IArith right) {
+    this.func = func;
+    this.name = name;
+    this.left = left;
+    this.right = right;
+  }
+
+  // Accepts an IArith visitor
+  public <R> R accept(IArithVisitor<R> visitor) {
+    return visitor.applyBinary(this);
+  }
+}
+
+class Mul implements BiFunction<Double, Double, Double> {
+  // Applies this function object to multiply two inputs
+  public Double apply(Double x, Double y) {
+    return x * y;
+  }
+}
+
+class Plus implements BiFunction<Double, Double, Double> {
+  // Applies this function object to add two inputs
+  public Double apply(Double x, Double y) {
+    return x + y;
+  }
+}
+
+class Minus implements BiFunction<Double, Double, Double> {
+  // Applies this function object to subtract two inputs
+  public Double apply(Double x, Double y) {
+    return x - y;
+  }
+}
+
+class Div implements BiFunction<Double, Double, Double> {
+  // Applies this function object to divide two inputs
+  public Double apply(Double x, Double y) {
+    return x / y;
+  }
+}
+
+class Neg implements Function<Double, Double> {
+  // Applies this function object to negate one input
+  public Double apply(Double x) {
+    return -1 * x;
+  }
+}
+
+class Sqr implements Function<Double, Double> {
+  // Applies this function object to square one input
+  public Double apply(Double x) {
+    return x * x;
+  }
+}
+
+// An interface for all visitors that visit an IArith
+interface IArithVisitor<R> {
+  // Applies this visitor to a given IArith
+  R apply(IArith a);
+
+  // Applies this visitor to a given binary formula
+  R applyBinary(BinaryFormula binary);
+
+  // Applies this visitor to a given constant
+  R applyConst(Const num);
+
+  // Applies this visitor to a given unary formula
+  R applyUnary(UnaryFormula unary);
+}
+
+// A visitor that evaluates an IArith and returns its value
+class EvalVisitor implements IArithVisitor<Double>, Function<IArith, Double> {
+
+  // Applies this visitor to an IArith, evaluating it
+  public Double apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Evaluates a given binary formula
+  public Double applyBinary(BinaryFormula binary) {
+    return binary.func.apply(this.apply(binary.left), this.apply(binary.right));
+  }
+
+  // Evaluates a given constant
+  public Double applyConst(Const num) {
+    return num.num;
+  }
+
+  // Evaluates a given unary formula
+  public Double applyUnary(UnaryFormula unary) {
+    return unary.func.apply(this.apply(unary.child));
+  }
+
+}
+
+// A visitor that converts an IArith to a string in Racket-style syntax
+class PrintVisitor implements IArithVisitor<String>, Function<IArith, String> {
+
+  // Applies this visitor to an IArith, stringifying it
+  public String apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Stringifies a given binary formula
+  public String applyBinary(BinaryFormula binary) {
+    return "(" + binary.name + " " + this.apply(binary.left) + " " + this.apply(binary.right) + ")";
+  }
+
+  // Stringifies a given constant
+  public String applyConst(Const num) {
+    return Double.toString(num.num);
+  }
+
+  // Stringifies a given unary formula
+  public String applyUnary(UnaryFormula unary) {
+    return "(" + unary.name + " " + this.apply(unary.child) + ")";
+  }
+
+}
+
+// A visitor that doubles all constants in an IArith
+class DoublerVisitor implements IArithVisitor<IArith>, Function<IArith, IArith> {
+
+  // Applies this visitor to an IArith, doubling all its constants
+  public IArith apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Returns a new version of a binary formula with all its constants doubled
+  public IArith applyBinary(BinaryFormula binary) {
+    return new BinaryFormula(binary.func, binary.name, this.apply(binary.left),
+        this.apply(binary.right));
+  }
+
+  // Returns a new constant with double the value
+  public IArith applyConst(Const num) {
+    return new Const(2 * num.num);
+  }
+
+  // Returns a new version of a unary formula with all its constants doubled
+  public IArith applyUnary(UnaryFormula unary) {
+    return new UnaryFormula(unary.func, unary.name, this.apply(unary.child));
+  }
+
+}
+
+// A visitor that calculates whether all constants in an IArith are below 10 (small)
+class AllSmallVisitor implements IArithVisitor<Boolean>, Function<IArith, Boolean> {
+
+  // Applies this visitor to an IArith, calculating if all its constants are small
+  public Boolean apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Calculates whether this binary formula contains no constants >=10
+  public Boolean applyBinary(BinaryFormula binary) {
+    return this.apply(binary.left) && this.apply(binary.right);
+  }
+
+  // Calculates whether this constant is <10
+  public Boolean applyConst(Const num) {
+    return num.num < 10;
+  }
+
+  // Calculates whether this unary formula contains no constants >=10
+  public Boolean applyUnary(UnaryFormula unary) {
+    return this.apply(unary.child);
+  }
+
+}
+
+// A visitor that calculates whether an IArith divides by roughly zero at any point
+class NoDivBy0 implements IArithVisitor<Boolean>, Function<IArith, Boolean> {
+
+  final double MINIMUM_NONZERO = 0.0001; // minimum value to not be considered "roughly zero"
+
+  // Applies this visitor to an IArith, determining if it contains any division by
+  // zero
+  public Boolean apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Calculates whether this binary formula contains any division by 0 anywhere
+  public Boolean applyBinary(BinaryFormula binary) {
+    EvalVisitor eval = new EvalVisitor();
+    return this.apply(binary.left) && this.apply(binary.right)
+        && (!"div".equals(binary.name) || Math.abs(eval.apply(binary.right)) > MINIMUM_NONZERO);
+  }
+
+  // Always returns true, since constants can not contain any division by zero
+  public Boolean applyConst(Const num) {
+    return true;
+  }
+
+  // Calculates whether this unary formula contains any division by 0 anywhere
+  public Boolean applyUnary(UnaryFormula unary) {
+    return this.apply(unary.child);
+  }
+
+}
+
+//A visitor that calculates whether an IArith has a negative value at any point in evaluation
+class NoNegativeResults implements IArithVisitor<Boolean>, Function<IArith, Boolean> {
+
+  // Applies this visitor to an IArith, determining if it contains any negative
+  // numbers during evaluation at any point
+  public Boolean apply(IArith a) {
+    return a.accept(this);
+  }
+
+  // Determines whether this binary formula contains any negative results at any
+  // point in evaluation
+  public Boolean applyBinary(BinaryFormula binary) {
+    EvalVisitor eval = new EvalVisitor();
+    NoDivBy0 ndiv = new NoDivBy0();
+    if (!ndiv.apply(binary)) {
+      return true;
+    }
+    return this.apply(binary.left) && this.apply(binary.right) && eval.apply(binary) >= 0;
+  }
+
+  // Returns whether this constant is non-negative
+  public Boolean applyConst(Const num) {
+    return num.num >= 0;
+  }
+
+  // Determines whether this unary formula contains any negative results at any
+  // point in evaluation
+  public Boolean applyUnary(UnaryFormula unary) {
+    EvalVisitor eval = new EvalVisitor();
+    return this.apply(unary.child) && eval.apply(unary) >= 0;
+  }
+
+}
+
+class ExamplesArith {
+
+  UnaryFormula sqr1 = new UnaryFormula(new Sqr(), "sqr", new Const(10));
+  UnaryFormula sqr2 = new UnaryFormula(new Sqr(), "sqr", sqr1);
+  UnaryFormula neg1 = new UnaryFormula(new Neg(), "neg", new Const(4));
+  UnaryFormula neg2 = new UnaryFormula(new Neg(), "neg", sqr2);
+
+  BinaryFormula mul1 = new BinaryFormula(new Mul(), "mul", new Const(5), new Const(6));
+  BinaryFormula mul2 = new BinaryFormula(new Mul(), "mul", new Const(5), sqr1);
+  BinaryFormula plus1 = new BinaryFormula(new Plus(), "plus", mul2, neg1);
+  BinaryFormula minus1 = new BinaryFormula(new Minus(), "minus", neg2, plus1);
+  BinaryFormula minus2 = new BinaryFormula(new Minus(), "minus", new Const(5), new Const(6));
+  BinaryFormula div1 = new BinaryFormula(new Div(), "div", mul2, neg1);
+  BinaryFormula div01 = new BinaryFormula(new Div(), "div", mul2, new Const(0));
+  BinaryFormula div02 = new BinaryFormula(new Div(), "div", mul2,
+      new BinaryFormula(new Div(), "div", new Const(1), new Const(10000)));
+
+  UnaryFormula sqr11 = new UnaryFormula(new Sqr(), "sqr", div02);
+
+  UnaryFormula sqr1d = new UnaryFormula(new Sqr(), "sqr", new Const(20));
+  UnaryFormula sqr2d = new UnaryFormula(new Sqr(), "sqr", sqr1d);
+  UnaryFormula neg1d = new UnaryFormula(new Neg(), "neg", new Const(8));
+  UnaryFormula neg2d = new UnaryFormula(new Neg(), "neg", sqr2d);
+
+  BinaryFormula mul1d = new BinaryFormula(new Mul(), "mul", new Const(10), new Const(12));
+  BinaryFormula mul2d = new BinaryFormula(new Mul(), "mul", new Const(10), sqr1d);
+  BinaryFormula plus1d = new BinaryFormula(new Plus(), "plus", mul2d, neg1d);
+  BinaryFormula minus1d = new BinaryFormula(new Minus(), "minus", neg2d, plus1d);
+  BinaryFormula div1d = new BinaryFormula(new Div(), "div", mul2d, neg1d);
+  BinaryFormula div01d = new BinaryFormula(new Div(), "div", mul2d, new Const(0));
+  BinaryFormula div02d = new BinaryFormula(new Div(), "div", mul2d,
+      new BinaryFormula(new Div(), "div", new Const(2), new Const(20000)));
+
+  EvalVisitor e = new EvalVisitor();
+  PrintVisitor p = new PrintVisitor();
+  DoublerVisitor d = new DoublerVisitor();
+  AllSmallVisitor s = new AllSmallVisitor();
+  NoDivBy0 z = new NoDivBy0();
+  NoNegativeResults n = new NoNegativeResults();
+
+  // Tests the Print visitor
+  boolean testPrintVisitor(Tester t) {
+    return t.checkExpect(p.apply(mul1), "(mul 5.0 6.0)")
+        && t.checkExpect(p.apply(mul2), "(mul 5.0 (sqr 10.0))")
+        && t.checkExpect(p.apply(sqr1), "(sqr 10.0)")
+        && t.checkExpect(p.apply(neg2), "(neg (sqr (sqr 10.0)))")
+        && t.checkExpect(p.apply(plus1), "(plus (mul 5.0 (sqr 10.0)) (neg 4.0))")
+        && t.checkExpect(p.apply(new Const(5)), "5.0")
+        && t.checkExpect(p.apply(div02), "(div (mul 5.0 (sqr 10.0)) (div 1.0 10000.0))")
+        && t.checkExpect(p.apply(minus1),
+            "(minus (neg (sqr (sqr 10.0))) (plus (mul 5.0 (sqr 10.0)) (neg 4.0)))");
+  }
+
+  // Tests the Eval visitor
+  boolean testEvalVisitor(Tester t) {
+    return t.checkExpect(e.apply(mul1), 30.0)//
+        && t.checkExpect(e.apply(mul2), 500.0)//
+        && t.checkExpect(e.apply(plus1), 496.0)//
+        && t.checkExpect(e.apply(minus1), -10496.0)//
+        && t.checkExpect(e.apply(div1), -125.0)//
+        && t.checkExpect(e.apply(new Const(5)), 5.0)//
+        && t.checkExpect(e.apply(sqr2), 10000.0)//
+        && t.checkExpect(e.apply(neg2), -10000.0);
+  }
+
+  // Tests the AllSmall visitor
+  boolean testAllSmallVisitor(Tester t) {
+    return t.checkExpect(s.apply(mul1), true)//
+        && t.checkExpect(s.apply(mul2), false)//
+        && t.checkExpect(s.apply(sqr1), false)//
+        && t.checkExpect(s.apply(sqr2), false)//
+        && t.checkExpect(s.apply(neg2), false)//
+        && t.checkExpect(s.apply(neg1), true)//
+        && t.checkExpect(s.apply(plus1), false)//
+        && t.checkExpect(s.apply(minus1), false)//
+        && t.checkExpect(s.apply(div1), false)//
+        && t.checkExpect(s.apply(new Const(10)), false)//
+        && t.checkExpect(s.apply(new Const(9)), true);
+  }
+
+  // Tests the Doubler visitor
+  boolean testDoublerVisitor(Tester t) {
+    return t.checkExpect(d.apply(mul1), mul1d)//
+        && t.checkExpect(d.apply(mul2), mul2d)//
+        && t.checkExpect(d.apply(plus1), plus1d)//
+        && t.checkExpect(d.apply(minus1), minus1d)//
+        && t.checkExpect(d.apply(div1), div1d)//
+        && t.checkExpect(d.apply(div01), div01d)//
+        && t.checkExpect(d.apply(div02), div02d)//
+        && t.checkExpect(d.apply(sqr1), sqr1d)//
+        && t.checkExpect(d.apply(sqr2), sqr2d)//
+        && t.checkExpect(d.apply(neg1), neg1d)//
+        && t.checkExpect(d.apply(neg2), neg2d)//
+        && t.checkExpect(d.apply(new Const(1)), new Const(2))
+        && t.checkExpect(d.apply(new Const(0)), new Const(0));
+  }
+
+  // Tests the NoNegativeResults visitor
+  boolean testNoNegativeResults(Tester t) {
+    return t.checkExpect(n.apply(mul1), true)//
+        && t.checkExpect(n.apply(div1), false)//
+        && t.checkExpect(n.apply(plus1), false)//
+        && t.checkExpect(n.apply(minus2), false)//
+        && t.checkExpect(n.apply(sqr1), true)//
+        && t.checkExpect(n.apply(neg1), false)//
+        && t.checkExpect(n.apply(new Const(0)), true)//
+        && t.checkExpect(n.apply(new Const(-1)), false);
+  }
+
+  // Tests the NoDivBy0 visitor
+  boolean testNoDivBy0Visitor(Tester t) {
+    return t.checkExpect(z.apply(div01), false)//
+        && t.checkExpect(z.apply(div02), false)//
+        && t.checkExpect(z.apply(div1), true)//
+        && t.checkExpect(z.apply(sqr11), false)//
+        && t.checkExpect(z.apply(plus1), true)//
+        && t.checkExpect(z.apply(new Const(0)), true);
+  }
+}

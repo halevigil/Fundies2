@@ -1,0 +1,104 @@
+import java.awt.Color;
+
+import tester.Tester;
+
+class BouncingBall {
+  Posn pos;
+  Color color;
+  int size;
+  int dx; // how fast is the ball moving to the right?
+  int dy; // how fast is the ball moving downward?
+ 
+  BouncingBall(Posn pos, Color color, int size, int dx, int dy) {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+ 
+  // Returns a new BouncingBall that's just like this BouncingBall, but moved
+  // by this BouncingBall's dx and dy
+  BouncingBall move() {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+ 
+  // Returns a new BouncingBall that represents this BouncingBall just after
+  // it has bounced off a side wall. Does not actually move the ball.
+  // This method will be called automatically when `collidesX` returns true
+  BouncingBall bounceX() {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+ 
+  // Like bounceX, except for using the top or bottom walls
+  BouncingBall bounceY() {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+ 
+  // Detects whether the ball is colliding with a side wall.
+  boolean collidesX(Posn topLeft, Posn botRight) {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+ 
+  // Detects whether the ball is colliding with a top or bottom wall.
+  boolean collidesY(Posn topLeft, Posn botRight) {
+    // TODO: FILL IN YOUR CODE HERE
+  }
+}
+ 
+class ExamplesBouncingBalls {
+  int WIDTH = 300;
+  int HEIGHT = 300;
+ 
+  // NOTE: We have provided BouncingWorld for you, in the starter code.
+  // We'll see how it works in a few lectures
+  boolean testBigBang(Tester t) {
+    BouncingWorld w = new BouncingWorld(WIDTH, HEIGHT);
+    return w.bigBang(WIDTH, HEIGHT, 0.1);
+  }
+}
+
+class Ball {
+  int x;
+  int y;
+  int radius;
+  Color color;
+
+  Ball(int x, int y, int radius, Color color) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+  }
+
+  // Returns the circumference of the ball
+  double circumference() {
+    return 2 * Math.PI * this.radius;
+  }
+
+  // Returns the distance from this ball's center to the center of the other ball
+  double distanceTo(Ball otherBall) {
+    return Math.sqrt(Math.pow(this.x - otherBall.x, 2) + Math.pow(this.y - otherBall.y, 2));
+  }
+
+  // Returns the area of this ball
+  double area() {
+    return Math.PI * Math.pow(this.radius, 2);
+  }
+
+  boolean overlaps(Ball otherBall) {
+    return this.distanceTo(otherBall) < this.radius + otherBall.radius;
+
+  }
+}
+
+class ExamplesBall {
+  Ball b = new Ball(0, 0, 5, Color.BLUE);
+  Ball b2 = new Ball(3, 4, 5, Color.RED);
+  Ball b3 = new Ball(10, 40, 5, Color.RED);
+  double EPS = 0.001;
+
+  boolean testBalls(Tester t) {
+    return t.checkInexact(b.area(), 78.5, EPS)
+        && t.checkInexact(b.circumference(), 10 * Math.PI, EPS)
+        && t.checkInexact(b.distanceTo(b2), 5, EPS) && t.checkExpect(b.overlaps(b2), true)
+        && t.checkExpect(b.overlaps(b3), false);
+
+  }
+}

@@ -1,0 +1,27 @@
+
+class RetailStore {
+  String company;
+  String city;
+  String type;
+  int squareFootage;
+  double startingWage;
+  boolean isHiring;
+
+  RetailStore(String company, String city, String type, int squareFootage, double startingWage,
+      boolean isHiring) {
+    this.company = company;
+    this.city = city;
+    this.type = type;
+    this.squareFootage = squareFootage;
+    this.startingWage = startingWage;
+    this.isHiring = isHiring;
+  }
+
+}
+
+class ExamplesRetailStore {
+  RetailStore gap = new RetailStore("Gap", "San Francisco", "clothing", 10000, 16.5, true);
+  RetailStore wollys = new RetailStore("Wollastons", "Boston", "groceries", 2250, 15, false);;
+  RetailStore mcDonalds = new RetailStore("McDonalds", "Middle of Nowhere", "fast food", 2500, 7.25,
+      true);
+}

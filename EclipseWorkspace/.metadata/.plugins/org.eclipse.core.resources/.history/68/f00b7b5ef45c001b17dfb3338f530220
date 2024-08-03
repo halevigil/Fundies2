@@ -1,0 +1,7 @@
+
+public class ExamplesRetailStore {
+  RetailStore gap = new RetailStore("Gap", "San Francisco", "clothing", 10000, 16.5, true);
+  RetailStore wollys = new RetailStore("Wollastons", "Boston", "groceries", 2250, 15, false);;
+  RetailStore mcDonalds = new RetailStore("McDonalds", "Middle of Nowhere", "fast food", 2500, 7.25,
+      true);
+}

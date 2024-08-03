@@ -1,0 +1,303 @@
+class ExamplesSeamRemoval {
+  SeamRemoval world1 = new SeamRemoval(new FromFileImage("Desert.jpg"));
+  ArrayList<Color> rowyybg;
+  ArrayList<Color> rowgbyy;
+  ArrayList<Color> rowYellow;
+  ArrayList<Color> rowBlack;
+  ArrayList<Color> rowGray;
+  ArrayList<Color> rowbbyyy;
+  ArrayList<Color> rowgyby;
+  ArrayList<Color> rowgpby;
+  ArrayList<Color> rowbypyb;
+  ArrayList<Color> rowypybb;
+  ArrayList<Color> rowbpbyb;
+  ArrayList<Color> rowccbcc;
+  ArrayList<Color> bgyb = new ArrayList<Color>(
+      List.of(Color.black, Color.gray, Color.yellow, Color.black));
+  ArrayList<Color> bgby = new ArrayList<Color>(
+      List.of(Color.black, Color.gray, Color.black, Color.yellow));
+  ArrayList<Color> bygb = new ArrayList<Color>(
+      List.of(Color.black, Color.yellow, Color.gray, Color.black));
+  ArrayList<Color> byyb = new ArrayList<Color>(
+      List.of(Color.black, Color.yellow, Color.yellow, Color.black));
+  ArrayList<Color> bygy = new ArrayList<Color>(
+      List.of(Color.black, Color.yellow, Color.gray, Color.yellow));
+  ArrayList<Color> bbgb = new ArrayList<Color>(
+      List.of(Color.black, Color.black, Color.gray, Color.black));
+  ArrayList<Color> ygbb = new ArrayList<Color>(
+      List.of(Color.yellow, Color.gray, Color.black, Color.black));
+
+  ArrayList<Color> bggb = new ArrayList<Color>(
+      List.of(Color.black, Color.gray, Color.gray, Color.black));
+
+  GridPixels image1;
+  GridPixels image2;
+  GridPixels image3;
+  GridPixels image4;
+  GridPixels image5;
+  GridPixels image6;
+  GridPixels image7;
+  GridPixels image8;
+  GridPixels image9;
+  TestUtils testUtils = new TestUtils();
+  SeamInfo weight0 = testUtils.seamInfoWithTotalWeight(0);
+  SeamInfo weight15 = testUtils.seamInfoWithTotalWeight(15);
+  SeamInfo weight15v2 = new SeamInfo(new Pixel(new Color(0), new CornerSentinel(),
+      new CornerSentinel(), new CornerSentinel(), new CornerSentinel()), weight15);
+  SeamInfo weight30 = testUtils.seamInfoWithTotalWeight(30);
+  GridPixels swapTest1;
+  GridPixels swapTest2;
+  GridPixels swapTest3;
+  GridPixels swapTest4;
+  GridPixels swapTest5;
+  GridPixels swapTest6;
+  GridPixels removeTest1;
+  GridPixels removeTest2;
+  GridPixels energyTest1;
+  GridPixels energyTest2;
+  GridPixels energyTest3;
+
+  // Initializes examples
+  void initData() {
+    world1 = new SeamRemoval(new FromFileImage("Desert.jpg"));
+    rowyybg = new ArrayList<Color>(List.of(Color.yellow, Color.yellow, Color.black, Color.gray));
+    rowgbyy = new ArrayList<Color>(List.of(Color.gray, Color.black, Color.yellow, Color.yellow));
+    rowYellow = new ArrayList<Color>(
+        List.of(Color.yellow, Color.yellow, Color.yellow, Color.yellow));
+    rowBlack = new ArrayList<Color>(List.of(Color.black, Color.black, Color.black, Color.black));
+    rowGray = new ArrayList<Color>(List.of(Color.gray, Color.gray, Color.gray, Color.gray));
+    rowbbyyy = new ArrayList<Color>(
+        List.of(Color.black, Color.black, Color.yellow, Color.yellow, Color.yellow));
+    rowgyby = new ArrayList<Color>(List.of(Color.gray, Color.yellow, Color.black, Color.yellow));
+    rowgpby = new ArrayList<Color>(List.of(Color.gray, Color.pink, Color.black, Color.yellow));
+    rowbypyb = new ArrayList<Color>(
+        List.of(Color.black, Color.yellow, Color.pink, Color.yellow, Color.black));
+    rowypybb = new ArrayList<Color>(
+        List.of(Color.yellow, Color.pink, Color.yellow, Color.black, Color.black));
+    rowbpbyb = new ArrayList<Color>(
+        List.of(Color.black, Color.pink, Color.black, Color.yellow, Color.black));
+    rowccbcc = new ArrayList<Color>(
+        List.of(Color.cyan, Color.cyan, Color.black, Color.cyan, Color.cyan));
+    image1 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowyybg, rowyybg, rowyybg)));
+    image2 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowgbyy, rowgbyy, rowgbyy)));
+    image3 = new GridPixels(
+        new ArrayList<ArrayList<Color>>(List.of(rowYellow, rowYellow, rowBlack, rowGray)));
+    image4 = new GridPixels(
+        new ArrayList<ArrayList<Color>>(List.of(rowGray, rowBlack, rowYellow, rowYellow)));
+    image5 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowbbyyy, rowbbyyy, rowbbyyy)));
+    image6 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowgyby, rowgpby)));
+    image7 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowgyby, rowgyby)));
+    image8 = new GridPixels(
+        new ArrayList<ArrayList<Color>>(List.of(rowbypyb, rowypybb, rowypybb, rowbypyb)));
+    image9 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(rowbpbyb, rowccbcc)));
+
+    swapTest1 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bygb, bgyb, bygb)));
+    swapTest2 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bgyb, bgyb, bygb)));
+    swapTest3 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bbgb, bgyb, bygy)));
+    swapTest4 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bggb, byyb, bygb)));
+    swapTest5 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bgby, bgyb, bygb)));
+    swapTest6 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, ygbb, bgyb, bygb)));
+
+    removeTest1 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bgby, bgyb, bygb)));
+    removeTest1.corner.down.down.left = removeTest1.corner.down.down.left.left;
+    removeTest1.corner.down.down.left.right = removeTest1.corner.down.down;
+
+    removeTest2 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bygb, bgyb, bygb)));
+    removeTest2.corner.down.down.left = removeTest2.corner.down.down.left.left;
+    removeTest2.corner.down.down.left.right = removeTest2.corner.down.down;
+
+    energyTest1 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(
+        new ArrayList<Color>(List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0)))
+        )));
+    energyTest2 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(
+        new ArrayList<Color>(List.of(new Color(0, 0, 0), new Color(255/8, 255/8, 255/8), new Color(0, 0, 0))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(-255/8, -255/8, -255/8), new Color(0, 0, 0)))
+        )));
+    energyTest3 = new GridPixels(new ArrayList<ArrayList<Color>>(List.of(
+        new ArrayList<Color>(List.of(new Color(0, 0, 0), new Color(255/4, 255/4, 255/4), new Color(10, 10, 10))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0))),
+            new ArrayList<Color>(
+                List.of(new Color(0, 0, 0), new Color(0, 0, 0), new Color(0, 0, 0)))
+        )));
+
+  }
+
+  void testSeamRemoval(Tester t) {
+    world1.bigBang(1000, 1000, 0.1);
+  }
+//
+//  void testLowestVerticalSeam(Tester t) {
+//    t.checkExpect(testUtils.seamInfoToList(image1.lowestVerticalSeam()),
+//        new ArrayList<Color>(List.of(Color.gray, Color.gray, Color.gray)));
+//    t.checkExpect(testUtils.seamInfoToList(new GridPixels(image2).lowestVerticalSeam()),
+//        new ArrayList<Color>(List.of(Color.gray, Color.gray, Color.gray)));
+//    t.checkExpect(testUtils.seamInfoToList(new GridPixels(image3).lowestVerticalSeam()),
+//        new ArrayList<Color>(List.of(Color.gray, Color.gray, Color.gray)));
+//    t.checkExpect(testUtils.seamInfoToList(new GridPixels(image4).lowestVerticalSeam()),
+//        new ArrayList<Color>(List.of(Color.gray, Color.gray, Color.gray)));
+//
+//    t.checkExpect(testUtils.seamInfoToList(new GridPixels(image5).lowestVerticalSeam()),
+//        new ArrayList<Color>(List.of(Color.black, Color.black, Color.black)));
+//  }
+
+  void testLowestWeight(Tester t) {
+    initData();
+    t.checkExpect(new SeamArrayUtils()
+        .lowestWeight(new ArrayList<SeamInfo>(List.of(weight0, weight15, weight30))), weight0);
+    t.checkExpect(new SeamArrayUtils()
+        .lowestWeight(new ArrayList<SeamInfo>(List.of(weight15, weight0, weight30))), weight0);
+    t.checkExpect(new SeamArrayUtils()
+        .lowestWeight(new ArrayList<SeamInfo>(List.of(weight15, weight30, weight0))), weight0);
+    t.checkExpect(new SeamArrayUtils().lowestWeight(
+        new ArrayList<SeamInfo>(List.of(weight30, weight15v2, weight15))), weight15v2);
+  }
+
+  // tests the width method on the GridPixels class
+  void testWidthGridPixels(Tester t) {
+    initData();
+    t.checkExpect(image1.width(), 4);
+    t.checkExpect(image8.width(), 5);
+  }
+
+  // tests the width method on the APixel class
+  void testWidthAPixel(Tester t) {
+    initData();
+    t.checkExpect(image1.corner.width(), 0);
+    t.checkExpect(image1.corner.right.width(), 4);
+    t.checkExpect(image1.corner.down.right.width(), 4);
+    t.checkExpect(image1.corner.right.right.width(), 3);
+    t.checkExpect(image1.corner.down.down.width(), 0);
+    t.checkExpect(image8.corner.right.width(), 5);
+  }
+
+//tests the height method on the GridPixels class
+  void testHeightGridPixels(Tester t) {
+    initData();
+    t.checkExpect(image1.height(), 3);
+    t.checkExpect(image8.height(), 4);
+  }
+
+  // tests the width method on the APixel class
+  void testHeightAPixel(Tester t) {
+    initData();
+    t.checkExpect(image1.corner.height(), 0);
+    t.checkExpect(image1.corner.right.right.height(), 0);
+    t.checkExpect(image1.corner.down.height(), 3);
+    t.checkExpect(image1.corner.down.right.height(), 3);
+    t.checkExpect(image1.corner.down.down.height(), 2);
+    t.checkExpect(image8.corner.down.height(), 4);
+  }
+
+  // tests the compareWeight method on SeamInfo
+  void testCompareWeight(Tester t) {
+    initData();
+    t.checkExpect(weight0.compareWeight(weight15), -15.);
+    t.checkExpect(weight0.compareWeight(weight15v2), -15.);
+    t.checkExpect(weight30.compareWeight(weight0), 30.);
+    t.checkExpect(weight30.compareWeight(weight30), 0.);
+  }
+
+  // tests the getBrightness method on APixel
+  void testGetBrightness(Tester t) {
+    initData();
+    t.checkExpect(new CornerSentinel().getBrightness(), 0.);
+    t.checkExpect(
+        new HorizontalSentinel(new CornerSentinel(), new CornerSentinel()).getBrightness(), 0.);
+    t.checkExpect(new VerticalSentinel(new CornerSentinel(), new CornerSentinel()).getBrightness(),
+        0.);
+
+    t.checkExpect(new Pixel(new Color(0, 0, 0), new CornerSentinel(), new CornerSentinel(),
+        new CornerSentinel(), new CornerSentinel()).getBrightness(), 0.);
+    t.checkExpect((new Pixel(new Color(150, 90, 203), new CornerSentinel(), new CornerSentinel(),
+        new CornerSentinel(), new CornerSentinel()).getBrightness() - 0.579) < 0.01, true);
+    t.checkExpect((new Pixel(new Color(90, 150, 203), new CornerSentinel(), new CornerSentinel(),
+        new CornerSentinel(), new CornerSentinel()).getBrightness() - 0.579) < 0.01, true);
+    t.checkExpect((new Pixel(new Color(150, 203, 90), new CornerSentinel(), new CornerSentinel(),
+        new CornerSentinel(), new CornerSentinel()).getBrightness() - 0.579) < 0.01, true);
+    t.checkExpect(new Pixel(new Color(255, 255, 255), new CornerSentinel(), new CornerSentinel(),
+        new CornerSentinel(), new CornerSentinel()).getBrightness(), 1.);
+  }
+
+  // tests the swap method on APixel
+  void testSwap(Tester t) {
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.right.right
+        .swap((Pixel) swapTest1.corner.down.down.right.right.right), true);
+    t.checkExpect(swapTest1, swapTest2);
+
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.right.right.right
+        .swap((Pixel) swapTest1.corner.down.down.right.right), true);
+    t.checkExpect(swapTest1, swapTest2);
+
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.right.right
+        .swap((Pixel) swapTest1.corner.down.down.down.right.right), true);
+    t.checkExpect(swapTest1, swapTest4);
+
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.down.right.right
+        .swap((Pixel) swapTest1.corner.down.down.right.right), true);
+    t.checkExpect(swapTest1, swapTest4);
+
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.right.right.swap((Pixel) swapTest1.corner.up.left),
+        true);
+    t.checkExpect(swapTest1, swapTest3);
+
+    initData();
+    t.checkExpect(swapTest1.corner.up.left.swap((Pixel) swapTest1.corner.down.down.right.right),
+        true);
+    t.checkExpect(swapTest1, swapTest3);
+
+    initData();
+    t.checkExpect(swapTest1.corner.swap((Pixel) swapTest1.corner.down.right), false);
+    t.checkExpect(swapTest1,
+        new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bygb, bgyb, bygb))));
+
+    initData();
+    t.checkExpect(swapTest1.corner.right.right.swap((Pixel) swapTest1.corner.down.right), false);
+    t.checkExpect(swapTest1,
+        new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bygb, bgyb, bygb))));
+
+    initData();
+    t.checkExpect(swapTest1.corner.down.down.swap((Pixel) swapTest1.corner.down.right), false);
+    t.checkExpect(swapTest1,
+        new GridPixels(new ArrayList<ArrayList<Color>>(List.of(bgyb, bygb, bgyb, bygb))));
+  }
+
+  // tests the swapToRight method on Pixel
+  void testSwapToRight(Tester t) {
+    initData();
+    ((Pixel) swapTest1.corner.down.down.right.right).swapToRight();
+    t.checkExpect(swapTest1, swapTest5);
+
+    initData();
+    ((Pixel) swapTest1.corner.down.down.right).swapToRight();
+    t.checkExpect(swapTest1, swapTest6);
+
+    initData();
+    ((Pixel) swapTest1.corner.down.down.left).swapToRight();
+    t.checkExpect(swapTest1, swapTest1);
+  }
+
+  // tests the removeHorizontal method on Pixel
+  void testRemoveHorizontal(Tester t) {
+    initData();
+    ((Pixel) swapTest1.corner.down.down.right.right).removeHorizontal();
+    t.checkExpect(swapTest1, removeTest1);
+
+    initData();
+    ((Pixel) swapTest1.corner.down.down.left).removeHorizontal();
+    t.checkExpect(swapTest1, removeTest2);
+  }
+
+}

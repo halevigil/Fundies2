@@ -1,0 +1,46 @@
+MastermindGame:
+
+MastermindGame is the main class for the game.
+It contains all the information about the state of the game at any given time:
+width (how many colors in each guess)
+numGuesses (how many guesses remain)
+colors (what are the possible colors of this game
+pastGuesses (a list containing all past guesses)
+feedbacks (a list containing the feedback for each past guess)
+secret (the secret as a list of colors)
+currGuess (the current guess as a list of colors)
+
+It contains the methods responsible for modifying these states (guess, addColorToGuess, generateRandomList), 
+though the calculations using these states are allocated to other classes.
+
+It is also responsible for combining all of the drawn components onto one scene to display it. 
+It contains many of the constant factors for drawing the game, including the dimensions shared by multiple components
+and the drawn components that stay constant (such as the titles and buttons).
+
+Finally, MastermindGame also handles clicks.
+
+
+AButton:
+
+The AButton abstract class contains the methods shared by all the buttons:
+the calculation for whether it was clicked on by a given mouse press (implemented concretely), and the method for 
+adding the button to the screen (abstract).
+GuessButton and ClearButton are simple extensions of AButton with the specific visuals for each button.
+ColorSelect is an extension that also contains information about the possible colors in the game, so that it can
+calculate exactly which color was pressed.
+
+
+IList:
+
+IList is used to represent both a list of colors (for the guess and secret)
+and for the list of past guesses / past feedback. 
+It contains all the methods for calculating how correct a guess is,
+and some utility methods to allow other classes to interact with it more easily (listRef, len, addToEnd).
+It also contains the methods drawVertical and drawHorizontal for easy drawing.
+
+
+IFunc:
+a function class, used in this case to initiate drawing classes.
+DrawGuess, DrawFeedback, DrawColor:
+These function objects allow each color, guess, and feedback to be drawn within a generic list with no type-specific methods.
+

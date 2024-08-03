@@ -1,0 +1,100 @@
+import java.awt.Color;
+
+import javalib.worldimages.Posn;
+import tester.Tester;
+
+class BouncingBall {
+  Posn pos;
+  Color color;
+  int size;
+  int dx; // how fast is the ball moving to the right?
+  int dy; // how fast is the ball moving downward?
+
+  BouncingBall(Posn pos, Color color, int size, int dx, int dy) {
+    this.pos = pos;
+    this.color = color;
+    this.size = size;
+    this.dx = dx;
+    this.dy = dy;
+  }
+
+  // Returns a new BouncingBall that's just like this BouncingBall, but moved
+  // by this BouncingBall's dx and dy
+  BouncingBall move() {
+    return new BouncingBall(new Posn(this.pos.x + this.dx, this.pos.y + this.dy), this.color,
+        this.size, this.dx, this.dy);
+  }
+
+  // Returns a new BouncingBall that represents this BouncingBall just after
+  // it has bounced off a side wall. Does not actually move the ball.
+  // This method will be called automatically when `collidesX` returns true
+  BouncingBall bounceX() {
+    return new BouncingBall(new Posn(this.pos.x, this.pos.y), this.color, this.size, -this.dx,
+        this.dy);
+  }
+
+  // Like bounceX, except for using the top or bottom walls
+  BouncingBall bounceY() {
+    return new BouncingBall(new Posn(this.pos.x, this.pos.y), this.color, this.size, this.dx,
+        -this.dy);
+  }
+
+  // Detects whether the ball is colliding with a side wall.
+  boolean collidesX(Posn topLeft, Posn botRight) {
+    return topLeft.x - this.pos.x < 0 || botRight.x - this.pos.x > 0;
+  }
+
+  // Detects whether the ball is colliding with a top or bottom wall.
+  boolean collidesY(Posn topLeft, Posn botRight) {
+    return topLeft.y - this.pos.y < 0 || botRight.y - this.pos.y > 0;
+  }
+
+  // Returns the circumference of the ball
+  double circumference() {
+    return 2 * Math.PI * this.radius();
+  }
+
+  // Returns the distance from this ball's center to the center of the other ball
+  double distanceTo(BouncingBall otherBall) {
+    return Math.sqrt(
+        Math.pow(this.pos.x - otherBall.pos.x, 2) + Math.pow(this.pos.y - otherBall.pos.y, 2));
+  }
+
+  // Returns the radius of the ball
+  double radius() {
+    return Math.sqrt(Math.pow(this.pos.x, 2) + Math.pow(this.pos.y, 2));
+  }
+
+  // Returns the area of this ball
+  double area() {
+    return Math.PI * Math.pow(this.radius(), 2);
+  }
+
+  // Returns whether this ball overlaps with the other ball
+  boolean overlaps(BouncingBall otherBall) {
+    return this.distanceTo(otherBall) < this.radius() + otherBall.radius();
+  }
+}
+
+class ExamplesBouncingBalls {
+  int WIDTH = 300;
+  int HEIGHT = 300;
+
+  BouncingBall b = new BouncingBall(new Posn(0, 0), Color.BLUE, 5, 1, 2);
+  BouncingBall b2 = new BouncingBall(new Posn(3, 4), Color.RED, 4, 1, 2);
+  BouncingBall b3 = new BouncingBall(new Posn(10, 40) Color.RED,5,1,2);
+
+  // NOTE: We have provided BouncingWorld for you, in the starter code.
+  // We'll see how it works in a few lectures
+  boolean testBigBang(Tester t) {
+    BouncingWorld w = new BouncingWorld(WIDTH, HEIGHT);
+    return w.bigBang(WIDTH, HEIGHT, 0.1);
+  }
+
+  boolean testBouncingBall(Tester t) {
+    return t.checkInexact(b.area(), 78.5, EPS)
+        && t.checkInexact(b.circumference(), 10 * Math.PI, EPS)
+        && t.checkInexact(b.distanceTo(b2), 5, EPS) && t.checkExpect(b.overlaps(b2), true)
+        && t.checkExpect(b.overlaps(b3), false);
+  }
+}

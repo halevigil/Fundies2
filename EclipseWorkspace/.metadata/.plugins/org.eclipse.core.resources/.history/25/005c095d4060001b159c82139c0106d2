@@ -1,0 +1,122 @@
+interface ILoString {
+  ILoString reverse();
+
+  ILoString normalize();
+
+  //takes the current list and produces a list of the same items in the same order
+  //using only ConsLoString and MtLoString
+  ILoString normalizeHelp(ILoString alreadyNormalized);
+
+  ILoString scanConcat();
+
+  String firstString();
+}
+
+class MtLoString implements ILoString {
+  public ILoString reverse() {
+    return new MtLoString();
+  }
+
+  public ILoString normalize() {
+    return new MtLoString();
+  }
+
+  public ILoString normalizeHelp(ILoString alreadyNormalized) {
+    return alreadyNormalized;
+  }
+
+  public ILoString scanConcat() {
+    return new MtLoString();
+  }
+
+  public String firstString() {
+    return "";
+  }
+}
+
+class ConsLoString implements ILoString {
+  String first;
+  ILoString rest;
+
+  ConsLoString(String first, ILoString rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+
+  public ILoString reverse() {
+    return new SnocLoString(this.rest.reverse(), this.first);
+  }
+
+  public ILoString scanConcat() {
+    ILoString thing = this.rest.scanConcat();
+    return new ConsLoString(this.first + thing.firstString(), thing);
+  }
+
+  public ILoString normalize() {
+    return new ConsLoString(this.first, this.rest.normalize());
+  }
+
+  public ILoString normalizeHelp(ILoString alreadyNormalized) {
+    return new ConsLoString(this.first, this.rest.normalizeHelp(alreadyNormalized));
+  }
+
+  public String firstString() {
+    return this.first;
+  }
+}
+
+class AppendLoString implements ILoString {
+  ILoString first;
+  ILoString second;
+
+  AppendLoString(ILoString first, ILoString second) {
+    this.first = first;
+    this.second = second;
+  }
+
+  public ILoString reverse() {
+    return new AppendLoString(this.second.reverse(), this.first.reverse());
+  }
+
+  public String firstString() {
+    return this.first.firstString();
+  }
+
+  public ILoString normalize() {
+    return this.first.normalizeHelp(this.second.normalize());
+  }
+
+  public ILoString normalizeHelp(ILoString alreadyNormalized) {
+    return this.first.normalizeHelp(this.second.normalizeHelp(alreadyNormalized));
+  }
+}
+
+class SnocLoString implements ILoString {
+  ILoString front;
+  String last;
+
+  SnocLoString(ILoString front, String last) {
+    this.front = front;
+    this.last = last;
+  }
+
+  public ILoString reverse() {
+    return new ConsLoString(this.last, this.front.reverse());
+  }
+
+  public String firstString() {
+    return this.front.firstString();
+  }
+
+  public ILoString normalize() {
+    return this.front.normalizeHelp(new ConsLoString(this.last, new MtLoString()));
+  }
+
+  public ILoString normalizeHelp(ILoString alreadyNormalized) {
+    return this.front.normalizeHelp(new ConsLoString(this.last, alreadyNormalized));
+  }
+}
+// Our implementation of reverse() differs from the Fundies 1 version because ours
+// uses Snoc and Append, while the Fundies 1 version only uses cons. Therefore, the
+// Fundies 1 version has to get the last element of the list by checking repeatedly,
+// while ours does not.

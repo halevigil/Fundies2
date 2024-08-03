@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="tester.Tester"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OutlineMode"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.CircleImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.TextImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.BesideImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.AboveImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OverlayImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.PhantomImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.AlignModeY"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.OverlayOffsetAlign"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.AboveAlignImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.FontStyle"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.FrameImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.RectangleImage"/>
+    <fullyQualifiedTypeName name="javalib.worldimages.AlignModeX"/>
+    <fullyQualifiedTypeName name="java.util.function.Function"/>
+</qualifiedTypeNameHistroy>

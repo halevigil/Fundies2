@@ -1,0 +1,313 @@
+import tester.Tester;
+
+// a piece of media
+interface IMedia {
+
+  // is this media really old?
+  boolean isReallyOld();
+
+  // are captions available in this language?
+  boolean isCaptionAvailable(String language);
+
+  // a string showing the proper display of the media
+  String format();
+}
+
+//a piece of media
+abstract class AMedia implements IMedia {
+  String title;
+  ILoString captionOptions;
+
+  // initializes the title and available captions for a media
+  AMedia(String title, ILoString captionOptions) {
+    this.title = title;
+    this.captionOptions = captionOptions;
+  }
+
+  /*
+   * Template
+   * 
+   * Fields
+   * this.title--String
+   * this.captionOptions--ILoString
+   * 
+   * Methods
+   * this.isReallyOld()--boolean
+   * this.isCaptionAvailable(String)--boolean
+   * this.format()--String
+   * this.getDescription()--String
+   * 
+   * Methods on Fields
+   * this.captionOptions.contains(String)--String
+   */
+
+  // is this media really old?
+  public boolean isReallyOld() {
+    /*
+     * Template: everything in class template
+     */
+    return false;
+  }
+
+  // are captions available in this language?
+  public boolean isCaptionAvailable(String language) {
+    /*
+     * Template: everything in class template plus:
+     * 
+     * Parameters
+     * language--String
+     */
+    return captionOptions.contains(language);
+  }
+
+  // returns a string showing the proper display of the media
+  public abstract String format();
+}
+
+// represents a movie
+class Movie extends AMedia {
+  int year;
+
+  // creates a movie with the given title, year and available captions
+  Movie(String title, int year, ILoString captionOptions) {
+    super(title, captionOptions);
+    this.year = year;
+  }
+
+  /*
+   * Template
+   * 
+   * Fields
+   * this.title--String
+   * this.captionOptions--ILoString
+   * this.year--int
+   * 
+   * Methods
+   * this.isReallyOld()--boolean
+   * this.format()--String
+   * this.getDescription--String
+   * this.isCaptionAvailable(String)--boolean
+   * 
+   * Methods on Fields
+   * this.captionOptions.contains(String)--boolean
+   */
+
+  @Override
+  // is this movie really old? a really old movie is one made before 1930
+  public boolean isReallyOld() {
+    /*
+     * Template: everything in class template
+     */
+    return this.year < 1930;
+  }
+
+  // returns a string showing the proper display of this movie, including its
+  // title and year
+  public String format() {
+    /*
+     * Template: everything in class template
+     */
+    return this.title + " (" + this.year + ")";
+  }
+}
+
+// represents a TV episode
+class TVEpisode extends AMedia {
+  String showName;
+  int seasonNumber;
+  int episodeOfSeason;
+
+  // creates a TVEpisode with the given title, show name, season number and
+  // episode number in season
+  TVEpisode(String title, String showName, int seasonNumber, int episodeOfSeason,
+      ILoString captionOptions) {
+    super(title, captionOptions);
+    this.showName = showName;
+    this.seasonNumber = seasonNumber;
+    this.episodeOfSeason = episodeOfSeason;
+  }
+
+  /*
+   * Template
+   * 
+   * Fields
+   * this.title--String
+   * this.captionOptions--ILoString
+   * this.showName--String
+   * this.seasonNumber--int
+   * this.episodeOfSeason--int
+   * 
+   * Methods
+   * this.isReallyOld()--boolean
+   * this.format()--String
+   * this.getDescription--String
+   * this.isCaptionAvailable(String)--boolean
+   * 
+   * Methods on Fields
+   * this.captionOptions.contains(String)--boolean
+   */
+
+  // returns a string showing the proper display of this TVEpisode, including its
+  // show name, season number, episode of season and title.
+  public String format() {
+    /*
+     * Template: everything in class template
+     */
+    return this.showName + " " + this.seasonNumber + "." + this.episodeOfSeason + " - "
+        + this.title;
+  }
+}
+
+// represents a YouTube video
+class YTVideo extends AMedia {
+  String channelName;
+
+  // creates a youtube video with the given title, channel name and available
+  // captions
+  public YTVideo(String title, String channelName, ILoString captionOptions) {
+    super(title, captionOptions);
+    this.channelName = channelName;
+  }
+
+  /*
+   * Template
+   * 
+   * Fields
+   * this.title--String
+   * this.captionOptions--ILoString
+   * this.channelName--String
+   * 
+   * Methods
+   * this.isReallyOld()--boolean
+   * this.format()--String
+   * this.getDescription--String
+   * this.isCaptionAvailable(String)--boolean
+   * 
+   * Methods on Fields
+   * this.captionOptions.contains(String)--boolean
+   */
+
+  // returns a string showing the proper display of this TVEpisode, including its
+  // title and channel name
+  public String format() {
+    /*
+     * Template: everything in class template
+     */
+    return this.title + " by " + this.channelName;
+  }
+}
+
+// lists of strings
+interface ILoString {
+  // does this list contain the given string?
+  boolean contains(String str);
+}
+
+// an empty list of strings
+class MtLoString implements ILoString {
+  /*
+   * Template
+   * 
+   * Methods
+   * this.contains(String)--boolean
+   */
+
+  // does this list contain the given string? always returns false
+  public boolean contains(String str) {
+    /*
+     * Template
+     * 
+     * Parameters
+     * str--String
+     */
+    return false;
+  }
+
+}
+
+// a non-empty list of strings
+class ConsLoString implements ILoString {
+  String first;
+  ILoString rest;
+
+  // creates a non-empty list of string with the first element and rest of list
+  ConsLoString(String first, ILoString rest) {
+    this.first = first;
+    this.rest = rest;
+  }
+  /*
+   * Template
+   * 
+   * Fields
+   * this.first--String
+   * this.rest--ILoStrings
+   * 
+   * Methods on Fields
+   * this.rest.contains(String)--boolean
+   * 
+   * Methods
+   * this.contains(String)--boolean
+   */
+
+  // does this conslist contain the given string?
+  public boolean contains(String str) {
+    /*
+     * Template: everything in class template plus...
+     * 
+     * Parameters
+     * str--String
+     */
+    return this.first.equals(str) || this.rest.contains(str);
+  }
+}
+
+class ExamplesMedia {
+  ILoString empty = new MtLoString();
+  ILoString full = new ConsLoString("one", new ConsLoString("two", empty));
+
+  // test the contains method on the ILoString interface
+  boolean testContains(Tester t) {
+    return t.checkExpect(empty.contains("one"), false)//
+        && t.checkExpect(full.contains("one"), true)//
+        && t.checkExpect(full.contains("two"), true)
+        && t.checkExpect(full.contains("three"), false);
+  }
+
+  ILoString englishSpanish = new ConsLoString("English",
+      new ConsLoString("Spanish", new MtLoString()));
+  IMedia olderMovie = new Movie("older", 1919, englishSpanish);
+  IMedia oldMovie = new Movie("old", 1929, new MtLoString());
+  IMedia newMovie = new Movie("new", 1930,
+      new ConsLoString("English", new ConsLoString("French", new MtLoString())));
+  IMedia newerMovie = new Movie("newer", 2000, englishSpanish);
+  IMedia newsVid = new YTVideo("Breaking News", "Fundies News Network", englishSpanish);
+  IMedia friendsEp = new TVEpisode("the one with the fundies", "Friends", 11, 1, englishSpanish);
+
+  // tests the isReallyOld method in the IMedia interface
+  boolean testIsReallyOld(Tester t) {
+    return t.checkExpect(oldMovie.isReallyOld(), true)
+        && t.checkExpect(olderMovie.isReallyOld(), true)
+        && t.checkExpect(newMovie.isReallyOld(), false)
+        && t.checkExpect(newerMovie.isReallyOld(), false)
+        && t.checkExpect(newsVid.isReallyOld(), false)//
+        && t.checkExpect(friendsEp.isReallyOld(), false);
+  }
+
+  // tests the format method in the IMedia interface
+  boolean testFormat(Tester t) {
+    return t.checkExpect(oldMovie.format(), "old (1929)")
+        && t.checkExpect(newsVid.format(), "Breaking News by Fundies News Network")
+        && t.checkExpect(friendsEp.format(), "Friends 11.1 - the one with the fundies");
+  }
+
+  // tests the isCaptionAvailable method in the IMedia interface
+  boolean testIsCaptionAvailable(Tester t) {
+    return t.checkExpect(oldMovie.isCaptionAvailable("Spanish"), false)
+        && t.checkExpect(olderMovie.isCaptionAvailable("French"), false)
+        && t.checkExpect(olderMovie.isCaptionAvailable("Spanish"), true)
+        && t.checkExpect(newMovie.isCaptionAvailable("French"), true)
+        && t.checkExpect(newsVid.isCaptionAvailable("English"), true)
+        && t.checkExpect(friendsEp.isCaptionAvailable("English"), true);
+  }
+
+}

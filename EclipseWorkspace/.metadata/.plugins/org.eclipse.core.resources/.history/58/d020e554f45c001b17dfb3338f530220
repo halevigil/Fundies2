@@ -1,0 +1,20 @@
+
+public class RetailStore {
+  String company;
+  String city;
+  String type;
+  int squareFootage;
+  double startingWage;
+  boolean isHiring;
+
+  RetailStore(String company, String city, String type, int squareFootage, double startingWage,
+      boolean isHiring) {
+    this.company = company;
+    this.city = city;
+    this.type = type;
+    this.squareFootage = squareFootage;
+    this.startingWage = startingWage;
+    this.isHiring = isHiring;
+  }
+
+}
